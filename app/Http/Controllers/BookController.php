@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookRequest;
 use App\Models\Book;
+use Faker\Guesser\Name;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 
 class BookController extends Controller
 {
@@ -13,17 +16,15 @@ class BookController extends Controller
         return response()->json(Book::all());
     }
 
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string',
-            'author' => 'required|string',
-            'year' => 'required|integer',
-            'description' => 'nullable|string'
-        ]);
-
-        $book = Book::create($request->all());
-        return response()->json(['message' => 'Book has been added'], 201);
+        $data = $request->validated();
+        $book = Book::create($data);
+    
+        return response()->json([
+            'message' => "Book '{$book->title}' has been added successfully."
+            // 'book' => $book
+        ], 201);
     }
 
     public function show($id)
